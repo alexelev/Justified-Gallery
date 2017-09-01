@@ -711,6 +711,12 @@
         var imgAspectRatio = $entry.data('jg.width') / $entry.data('jg.height');
         if (availableWidth / (this.buildingRow.aspectRatio + imgAspectRatio) < this.settings.rowHeight) {
           this.flushRow(false);
+
+          if (this.rows == this.settings.maxRowsCount) {
+              this.stopLoadingSpinnerAnimation();
+              return;
+          }
+
           if(++this.yield.flushed >= this.yield.every) {
             this.startImgAnalyzer(isForResize);
             return;
@@ -960,6 +966,11 @@
     this.checkOrConvertNumber(this.settings, 'margins');
     this.checkOrConvertNumber(this.settings, 'border');
 
+    this.checkOrConvertNumber(this.settings, 'maxRowsCount');
+    if(this.settings.maxRowsCount < 0) {
+        throw 'maxRowsCount must be a positive number';
+    }
+
     var lastRowModes = [
       'justify',
       'nojustify',
@@ -968,6 +979,8 @@
       'right',
       'hide'
     ];
+
+
     if (lastRowModes.indexOf(this.settings.lastRow) === -1) {
       throw 'lastRow must be one of: ' + lastRowModes.join(', ');
     }
@@ -1140,7 +1153,8 @@
       - a function: invoked with arguments (entry, index, array). Return true to keep the entry, false otherwise.
                     It follows the specifications of the Array.prototype.filter() function of JavaScript.
     */
-    selector: 'a, div:not(.spinner)' // The selector that is used to know what are the entries of the gallery
+    selector: 'a, div:not(.spinner)', // The selector that is used to know what are the entries of the gallery
+    maxRowsCount: 0,   // maximum number of rows displayed
   };
 
 }(jQuery));
